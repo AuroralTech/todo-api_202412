@@ -25,7 +25,7 @@ RUN GOBIN=/usr/local/bin go install github.com/cosmtrek/air@v1.49.0
 # go.modを参照し、go.sumファイルの更新を行う
 RUN go mod tidy
 
-EXPOSE 8080
+EXPOSE ${API_PORT}
 
 # localではホットリロードを有効にしたいのでairで起動する
 # CMD ["air", "-c", ".air.toml"]
