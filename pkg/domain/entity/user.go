@@ -1,0 +1,3 @@
+// ドメインモデル
+
+package entity

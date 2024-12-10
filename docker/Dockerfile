@@ -19,8 +19,8 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# AIRのインストール
-RUN GOBIN=/usr/local/bin go install github.com/cosmtrek/air@v1.49.0
+# airのインストール
+RUN go install github.com/cosmtrek/air@v1.49.0
 
 # go.modを参照し、go.sumファイルの更新を行う
 RUN go mod tidy
@@ -30,4 +30,4 @@ EXPOSE ${API_PORT}
 # localではホットリロードを有効にしたいのでairで起動する
 # CMD ["air", "-c", ".air.toml"]
 # air導入まではmain.goを起動する
-CMD ["go", "run", "main.go"]
+CMD ["go", "run", "cmd/main.go"]
