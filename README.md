@@ -12,6 +12,6 @@
     ├── entity # エンティティ（ドメインモデル）
     ├── handler # ハンドラー
     ├── repository # レポジトリ
-        └── interface # レポジトリのインターフェース
+    │   └── interface # レポジトリのインターフェース
     └── usecase # ユースケース
 ```
