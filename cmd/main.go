@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/AuroralTech/todo-api_202412/db/config"
+	"github.com/AuroralTech/todo-api_202412/config"
 	"github.com/rs/cors"
 )
 
