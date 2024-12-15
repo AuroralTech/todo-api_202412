@@ -9,19 +9,65 @@ import (
 )
 
 var Aliases = map[string]interface{}{
-	"mg": Migration,
-	"cm": CreateMigrationFile,
+	"mup":      MigrationUp,
+	"mdown":    MigrationDown,
+	"createmg": CreateMigrationFile,
 }
 
-// Migration () 実行するとマイグレーションがされる
-func Migration() error {
+// MigrationUp (arg string) 実行するとマイグレーションがされる 例: "all", "1", "2", "3"
+func MigrationUp(arg string) error {
 	fmt.Println("マイグレーションを開始します...")
-	cmd, err := exec.Command("docker", "compose", "run", "--rm", "migrate", "-database", "postgres://root:password@db/local_db?sslmode=disable", "-path", "postgres", "up").CombinedOutput()
+
+	var cmd []byte
+	var err error
+
+	if arg == "all" {
+		// 全てのマイグレーションを実行
+		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
+			"-database", "postgres://root:password@db/local_db?sslmode=disable",
+			"-path", "postgres", "up").CombinedOutput()
+	} else {
+		// 引数がある場合は指定された数のマイグレーションのみ実行
+		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
+			"-database", "postgres://root:password@db/local_db?sslmode=disable",
+			"-path", "postgres", "up", arg).CombinedOutput()
+	}
+
 	fmt.Println("Output Command:", string(cmd))
 	if err != nil {
 		fmt.Println("エラーによりマイグレーションが完了できませんでした")
 		return err
 	}
+
+	fmt.Println("マイグレーションが完了しました!!")
+	return nil
+}
+
+// MigrationDown (arg string) 実行するとマイグレーションがされる 例: "all", "1", "2", "3"
+func MigrationDown(arg string) error {
+	fmt.Println("マイグレーションを開始します...")
+
+	var cmd []byte
+	var err error
+
+	if arg == "all" {
+		// 全てのマイグレーションを実行
+		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
+			"-database", "postgres://root:password@db/local_db?sslmode=disable",
+			"-path", "postgres", "down").CombinedOutput()
+	} else {
+		// 引数がある場合は指定された数のマイグレーションのみ実行
+		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
+			"-database", "postgres://root:password@db/local_db?sslmode=disable",
+			"-path", "postgres", "down", arg).CombinedOutput()
+	}
+
+	fmt.Println("Output Command:", string(cmd))
+	if err != nil {
+		fmt.Println("エラーによりマイグレーションが完了できませんでした")
+		return err
+	}
+
 	fmt.Println("マイグレーションが完了しました!!")
 	return nil
 }
