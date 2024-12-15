@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,9 +23,15 @@ func main() {
 	}
 
 	// データベースの設定
-	_, err := config.NewDatabase()
+	db, err := config.NewDatabase()
 	if err != nil {
 		log.Fatalf("データベース接続エラー: %v", err)
+	}
+
+	// bun疎通確認（データベースのバージョンを取得）
+	var dbVersion string
+	if err = db.NewSelect().ColumnExpr("version()").Scan(context.Background(), &dbVersion); err != nil {
+		log.Fatalf("bun接続エラー: %v", err)
 	}
 
 	// CORSの設定
