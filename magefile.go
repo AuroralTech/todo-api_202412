@@ -25,12 +25,12 @@ func MigrationUp(arg string) error {
 		// 全てのマイグレーションを実行
 		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
 			"-database", "postgres://root:password@db/local_db?sslmode=disable",
-			"-path", "postgres", "up").CombinedOutput()
+			"-path", "db/migrations", "up").CombinedOutput()
 	} else {
 		// 引数がある場合は指定された数のマイグレーションのみ実行
 		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
 			"-database", "postgres://root:password@db/local_db?sslmode=disable",
-			"-path", "postgres", "up", arg).CombinedOutput()
+			"-path", "db/migrations", "up", arg).CombinedOutput()
 	}
 
 	fmt.Println("Output Command:", string(cmd))
@@ -54,12 +54,12 @@ func MigrationDown(arg string) error {
 		// 全てのマイグレーションを実行
 		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
 			"-database", "postgres://root:password@db/local_db?sslmode=disable",
-			"-path", "postgres", "down").CombinedOutput()
+			"-path", "db/migrations", "down").CombinedOutput()
 	} else {
 		// 引数がある場合は指定された数のマイグレーションのみ実行
 		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
 			"-database", "postgres://root:password@db/local_db?sslmode=disable",
-			"-path", "postgres", "down", arg).CombinedOutput()
+			"-path", "db/migrations", "down", arg).CombinedOutput()
 	}
 
 	fmt.Println("Output Command:", string(cmd))
@@ -75,7 +75,7 @@ func MigrationDown(arg string) error {
 // CreateMigrationFile (name string) 引数に値を渡し、マイグレーションファイルを作成する 例: create_users、add_uuid_to_users
 func CreateMigrationFile(name string) error {
 	fmt.Println("マイグレーションファイルを作成します...")
-	cmd, err := exec.Command("docker", "compose", "run", "--rm", "migrate", "create", "-ext", "sql", "-dir", "postgres", name).Output()
+	cmd, err := exec.Command("docker", "compose", "run", "--rm", "migrate", "create", "-ext", "sql", "-dir", "db/migrations", name).Output()
 	fmt.Println("Output Command:", string(cmd))
 	if err != nil {
 		fmt.Println("エラーによりマイグレーションファイルを作成できませんでした")

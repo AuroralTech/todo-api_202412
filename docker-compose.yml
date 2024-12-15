@@ -34,8 +34,7 @@ services:
   migrate:
     image: migrate/migrate:v4.18.1
     volumes:
-      - ./migrations:/migrations
-    working_dir: /migrations
+      - ./db/migrations:/db/migrations
     depends_on:
       db:
         condition: service_healthy
