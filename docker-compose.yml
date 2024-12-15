@@ -32,6 +32,12 @@ services:
       timeout: 10s
       retries: 5
       start_period: 10s
-
+  migrate:
+    image: migrate/migrate:v4.18.1
+    volumes:
+      - ./db/migrations:/db/migrations
+    depends_on:
+      db:
+        condition: service_healthy
 volumes:
   postgres_data: # 名前付きボリューム
