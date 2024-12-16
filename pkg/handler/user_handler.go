@@ -1,27 +1,32 @@
-package user
+package handler
 
 import (
 	"log"
 	"net/http"
 
-	usecase "github.com/AuroralTech/todo-api_202412/pkg/usecase/user"
+	"github.com/AuroralTech/todo-api_202412/pkg/usecase"
+
 	"github.com/labstack/echo"
 )
+
+type UserHandler interface {
+	UpdateUser(ctx echo.Context) error
+}
+
+type updateUser struct {
+	updateUserUsecase usecase.UserUsecase
+}
 
 type UpdateUserRequest struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
-type UserHandler struct {
-	userUsecase *usecase.UserUsecase
+func NewUserHandler(updateUserUsecase usecase.UserUsecase) UserHandler {
+	return &updateUser{updateUserUsecase: updateUserUsecase}
 }
 
-func NewUserHandler(userUsecase *usecase.UserUsecase) UserHandler {
-	return UserHandler{userUsecase: userUsecase}
-}
-
-func (h *UserHandler) UpdateUser(ctx echo.Context) error {
+func (h *updateUser) UpdateUser(ctx echo.Context) error {
 	req := UpdateUserRequest{}
 	if err := ctx.Bind(&req); err != nil {
 		log.Printf("bind error occurred in user handler: %v", err)
@@ -29,7 +34,7 @@ func (h *UserHandler) UpdateUser(ctx echo.Context) error {
 			"error": err.Error(),
 		})
 	}
-	updatedCounts, err := h.userUsecase.Execute(ctx.Request().Context(), usecase.UpdateUserInput{
+	updatedCounts, err := h.updateUserUsecase.UpdateUser(ctx.Request().Context(), usecase.UserUsecaseInput{
 		ID:   req.ID,
 		Name: req.Name,
 	})

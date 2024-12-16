@@ -12,12 +12,12 @@ type UserRepository struct {
 	db *bun.DB
 }
 
-func NewUserRepository(db *bun.DB) repository.UserRepository {
+func NewUserRepository(db *bun.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-// UpdateUser ユーザーを更新
-func (r *UserRepository) UpdateUser(ctx context.Context, params repository.UpdateUserParams) (int64, error) {
+// Update ユーザーを更新
+func (r *UserRepository) Update(ctx context.Context, params repository.UpdateUserParams) (int64, error) {
 	user := &entity.User{
 		ID:          params.ID,
 		FirebaseUID: params.FirebaseUID,

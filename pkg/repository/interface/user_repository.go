@@ -11,5 +11,5 @@ type UpdateUserParams struct {
 }
 
 type UserRepository interface {
-	UpdateUser(ctx context.Context, params UpdateUserParams) (int64, error)
+	Update(ctx context.Context, input UpdateUserParams) (int64, error)
 }

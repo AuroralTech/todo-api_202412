@@ -8,9 +8,10 @@ import (
 	"time"
 
 	"github.com/AuroralTech/todo-api_202412/config"
-	userHandler "github.com/AuroralTech/todo-api_202412/pkg/handler/user"
-	repository "github.com/AuroralTech/todo-api_202412/pkg/repository"
-	userUsecase "github.com/AuroralTech/todo-api_202412/pkg/usecase/user"
+	"github.com/AuroralTech/todo-api_202412/pkg/handler"
+	"github.com/AuroralTech/todo-api_202412/pkg/repository"
+	"github.com/AuroralTech/todo-api_202412/pkg/usecase"
+
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
@@ -50,8 +51,8 @@ func main() {
 
 	// 依存性の注入
 	userRepository := repository.NewUserRepository(db)
-	userUsecase := userUsecase.NewUserUsecase(userRepository)
-	userHandler := userHandler.NewUserHandler(userUsecase)
+	userUsecase := usecase.NewUserUsecase(userRepository)
+	userHandler := handler.NewUserHandler(userUsecase)
 
 	// ルーティングの設定
 	e.PUT("/users", userHandler.UpdateUser)
