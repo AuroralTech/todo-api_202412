@@ -12,7 +12,7 @@ import (
 )
 
 // loadDataSourceNameはデータベースの設定を読み込み、データベースの接続文字列（DSN）を返す
-func loadDataSourceName() (string, error) {
+func LoadDataSourceName() (string, error) {
 	// 環境変数から設定を読み込み
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
@@ -34,7 +34,7 @@ func loadDataSourceName() (string, error) {
 
 func NewDatabase() (*bun.DB, error) {
 	// データベース接続文字列（DSN）を取得
-	dbDsn, err := loadDataSourceName()
+	dbDsn, err := LoadDataSourceName()
 	if err != nil {
 		return nil, fmt.Errorf("failed to loadDataSourceName: %w", err)
 	}
