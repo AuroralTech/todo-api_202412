@@ -4,12 +4,15 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
 	"github.com/AuroralTech/todo-api_202412/config"
-	"github.com/rs/cors"
+	userHandler "github.com/AuroralTech/todo-api_202412/pkg/handler/user"
+	repository "github.com/AuroralTech/todo-api_202412/pkg/repository"
+	userUsecase "github.com/AuroralTech/todo-api_202412/pkg/usecase/user"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 const requestTimeout = 5 * time.Minute
@@ -34,25 +37,28 @@ func main() {
 		log.Fatalf("bun接続エラー: %v", err)
 	}
 
+	// echoサーバーの設定
+	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 	// CORSの設定
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},                            // すべてのオリジンを許可
-		AllowCredentials: true,                                     // クレデンシャル情報（Cookieなど）を許可
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"}, // 許可するHTTPメソッド
-	})
-	httpHandler := c.Handler(http.DefaultServeMux)
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     []string{"*"},
+		AllowCredentials: true,
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+	}))
 
-	// サーバーの設定
-	server := &http.Server{
-		Addr:         fmt.Sprintf(":%s", apiPort),
-		Handler:      httpHandler,
-		ReadTimeout:  requestTimeout,
-		WriteTimeout: requestTimeout,
-	}
+	// 依存性の注入
+	userRepository := repository.NewUserRepository(db)
+	userUsecase := userUsecase.NewUserUsecase(userRepository)
+	userHandler := userHandler.NewUserHandler(userUsecase)
+
+	// ルーティングの設定
+	e.PUT("/users", userHandler.UpdateUser)
 
 	// サーバーの起動
 	log.Printf("サーバーを起動します: :%s", apiPort)
-	if err := server.ListenAndServe(); err != nil {
+	if err := e.Start(fmt.Sprintf(":%s", apiPort)); err != nil {
 		log.Fatalf("サーバー起動エラー: %v", err)
 	}
 }

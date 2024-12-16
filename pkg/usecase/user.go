@@ -1,3 +1,0 @@
-// ユースケース
-
-package usecase

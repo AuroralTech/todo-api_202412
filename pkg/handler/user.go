@@ -1,3 +1,0 @@
-// ハンドラー
-
-package handler
