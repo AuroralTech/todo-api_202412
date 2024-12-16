@@ -6,6 +6,9 @@ package main
 import (
 	"fmt"
 	"os/exec"
+
+	"github.com/AuroralTech/todo-api_202412/config"
+	"github.com/joho/godotenv"
 )
 
 var Aliases = map[string]interface{}{
@@ -18,19 +21,34 @@ var Aliases = map[string]interface{}{
 func MigrationUp(arg string) error {
 	fmt.Println("マイグレーションを開始します...")
 
+	// .envファイルを読み込む
+	if err := godotenv.Load(".env"); err != nil {
+		fmt.Println(".envファイルを読み込めませんでした")
+		return err
+	}
+	// データベース接続文字列（DSN）を取得
+	dbDsn, err := config.LoadDataSourceName()
+	if err != nil {
+		fmt.Println("データベース接続文字列を取得できませんでした")
+		return err
+	}
+
 	var cmd []byte
-	var err error
 
 	if arg == "all" {
 		// 全てのマイグレーションを実行
-		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
-			"-database", "postgres://root:password@db/local_db?sslmode=disable",
-			"-path", "db/migrations", "up").CombinedOutput()
+		cmd, err = exec.Command(
+			"docker", "compose", "run", "--rm", "migrate",
+			"-database", dbDsn,
+			"-path", "db/migrations", "up",
+		).CombinedOutput()
 	} else {
 		// 引数がある場合は指定された数のマイグレーションのみ実行
-		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
-			"-database", "postgres://root:password@db/local_db?sslmode=disable",
-			"-path", "db/migrations", "up", arg).CombinedOutput()
+		cmd, err = exec.Command(
+			"docker", "compose", "run", "--rm", "migrate",
+			"-database", dbDsn,
+			"-path", "db/migrations", "up", arg,
+		).CombinedOutput()
 	}
 
 	fmt.Println("Output Command:", string(cmd))
@@ -47,19 +65,34 @@ func MigrationUp(arg string) error {
 func MigrationDown(arg string) error {
 	fmt.Println("マイグレーションを開始します...")
 
+	// .envファイルを読み込む
+	if err := godotenv.Load(".env"); err != nil {
+		fmt.Println(".envファイルを読み込めませんでした")
+		return err
+	}
+	// データベース接続文字列（DSN）を取得
+	dbDsn, err := config.LoadDataSourceName()
+	if err != nil {
+		fmt.Println("データベース接続文字列を取得できませんでした")
+		return err
+	}
+
 	var cmd []byte
-	var err error
 
 	if arg == "all" {
 		// 全てのマイグレーションを実行
-		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
-			"-database", "postgres://root:password@db/local_db?sslmode=disable",
-			"-path", "db/migrations", "down").CombinedOutput()
+		cmd, err = exec.Command(
+			"docker", "compose", "run", "--rm", "migrate",
+			"-database", dbDsn,
+			"-path", "db/migrations", "down", "-all",
+		).CombinedOutput()
 	} else {
 		// 引数がある場合は指定された数のマイグレーションのみ実行
-		cmd, err = exec.Command("docker", "compose", "run", "--rm", "migrate",
-			"-database", "postgres://root:password@db/local_db?sslmode=disable",
-			"-path", "db/migrations", "down", arg).CombinedOutput()
+		cmd, err = exec.Command(
+			"docker", "compose", "run", "--rm", "migrate",
+			"-database", dbDsn,
+			"-path", "db/migrations", "down", arg,
+		).CombinedOutput()
 	}
 
 	fmt.Println("Output Command:", string(cmd))
